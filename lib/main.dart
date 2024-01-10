@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 main() {
   runApp(new QuestionApp());
@@ -8,26 +8,49 @@ main() {
 
 class _QuestionAppState extends State<QuestionApp> {
   var _selectedQuestion = 0;
+  var _totalPoints = 0;
   final List<Map> _questions = const [
     {
       'text': 'Whats your favorite color?',
-      'answers': ['Black', 'Red', 'Yellow', 'White'],
+      'answers': [
+        {'text': 'Black', 'points': 10},
+        {'text': 'Red', 'points': 5},
+        {'text': 'Yellow', 'points': 3},
+        {'text': 'White', 'points': 1},
+      ],
     },
     {
       'text': 'Whats your favorite animal?',
-      'answers': ['Monkey', 'Rabbit', 'Lion', 'Horse'],
+      'answers': [
+        {'text': 'Monkey', 'points': 10},
+        {'text': 'Rabbit', 'points': 5},
+        {'text': 'Lion', 'points': 3},
+        {'text': 'Horse', 'points': 1},
+      ],
     },
     {
       'text': 'Whats your favorite meal?',
-      'answers': ['Hamburguer', 'Pizza', 'Tacos', 'Lasagna'],
+      'answers': [
+        {'text': 'Hamburguer', 'points': 10},
+        {'text': 'Pizza', 'points': 5},
+        {'text': 'Tacos', 'points': 3},
+        {'text': 'Lasagna', 'points': 1},
+      ],
     },
   ];
 
-  void _answer() {
+  void _answer(int points) {
     setState(() {
       _selectedQuestion++;
+      _totalPoints += points;
     });
-    print(_selectedQuestion);
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      _selectedQuestion = 0;
+      _totalPoints = 0;
+    });
   }
 
   bool get hasSelectedQuestion {
@@ -35,20 +58,18 @@ class _QuestionAppState extends State<QuestionApp> {
   }
 
   Widget build(BuildContext context) {
-    List<String>? answers =
-        hasSelectedQuestion ? _questions[_selectedQuestion]['answers'] : null;
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('Questions'),
         ),
         body: hasSelectedQuestion
-            ? Column(children: <Widget>[
-                Question(_questions[_selectedQuestion]['text']),
-                ...answers!.map((t) => Answer(t, _answer)).toList(),
-              ])
-            : null,
+            ? Quiz(
+                questions: _questions,
+                selectedQuestion: _selectedQuestion,
+                onAnswer: _answer,
+              )
+            : Result(_totalPoints, _resetQuiz),
       ),
     );
   }
